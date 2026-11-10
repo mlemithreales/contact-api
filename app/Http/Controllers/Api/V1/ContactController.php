@@ -16,4 +16,68 @@ class ContactController extends Controller
             'data' => $contacts
         ]);
     }
+
+    public function store(Request $request)
+    {
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'phone_number' => 'required|string|max:255',
+            'address' => 'required|string|max:255',
+            'email' => 'required|email|max:255',
+            'avatar' => 'nullable|string|max:255',
+        ]);
+
+        $contact = Contact::create([
+            ...$validated,
+            'user_id' => $request->user()->id,
+        ]);
+
+        return response()->json([
+            'message' => 'Contacto creado correctamente',
+            'data' => $contact
+        ], 201);
+    }
+
+    public function show(Request $request, string $id)
+    {
+        $contact = Contact::where('user_id', $request->user()->id)
+            ->findOrFail($id);
+
+        return response()->json([
+            'data' => $contact
+        ]);
+    }
+
+    public function update(Request $request, string $id)
+    {
+        $contact = Contact::where('user_id', $request->user()->id)
+            ->findOrFail($id);
+
+        $validated = $request->validate([
+            'name' => 'sometimes|required|string|max:255',
+            'phone_number' => 'sometimes|required|string|max:255',
+            'address' => 'sometimes|required|string|max:255',
+            'email' => 'sometimes|required|email|max:255',
+            'avatar' => 'nullable|string|max:255',
+        ]);
+
+        $contact->update($validated);
+
+        return response()->json([
+            'message' => 'Contacto actualizado correctamente',
+            'data' => $contact
+        ]);
+    }
+
+    public function destroy(Request $request, string $id)
+    {
+        $contact = Contact::where('user_id', $request->user()->id)
+            ->findOrFail($id);
+
+        $contact->delete();
+
+        return response()->json([
+            'message' => 'Contacto eliminado correctamente'
+        ]);
+    }
 }

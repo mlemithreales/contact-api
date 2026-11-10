@@ -32,7 +32,9 @@ test('no permite iniciar sesión con credenciales incorrectas', function () {
     ]);
 
     $response->assertUnprocessable()
-        ->assertJsonValidationErrors('email');
+    ->assertJson([
+        'message' => 'Los datos proporcionados no son válidos.'
+    ]);
 });
 
 test('un usuario autenticado puede consultar su perfil', function () {
