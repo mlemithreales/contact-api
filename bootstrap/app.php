@@ -25,7 +25,8 @@ return Application::configure(basePath: dirname(__DIR__))
         $exceptions->render(function (ValidationException $exception, Request $request) {
             if ($request->is('api/*')) {
                 return response()->json([
-                    'message' => 'Los datos proporcionados no son válidos.'
+                    'message' => 'Los datos proporcionados no son válidos.',
+                    'errors' => $exception->errors(),
                 ], 422);
             }
         });
