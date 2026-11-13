@@ -57,10 +57,54 @@ test('no crea un contacto sin teléfono', function () {
         'name' => 'Ana Torres',
     ]);
 
-   
     $response->assertUnprocessable()
         ->assertJsonValidationErrors(['phone_number']);
     
     $this->assertDatabaseCount('contacts', 0);
 });
 
+test('no permite consultar contactos sin autenticación', function () {
+    $response = $this->getJson('/api/v1/contacts');
+
+    $response->assertUnauthorized();
+});
+
+test('no permite repetir el correo en la agenda del usuario', function () {
+    $user = User::factory()->create();
+    Sanctum::actingAs($user);
+
+    Contact::factory()->for($user)->create([
+        'email' => 'ana@gmail.com',
+    ]);
+
+    $response = $this->postJson('/api/v1/contacts', [
+        'name' => 'Ana Torres',
+        'phone_number' => '3001234567',
+        'email' => 'ana@gmail.com',
+    ]);
+
+    $response->assertUnprocessable()
+        ->assertJsonValidationErrors(['email']);
+
+    $this->assertDatabaseCount('contacts', 1);
+});
+
+test('no permite repetir el teléfono en la agenda del usuario', function () {
+    $user = User::factory()->create();
+    Sanctum::actingAs($user);
+
+    Contact::factory()->for($user)->create([
+        'phone_number' => '3001234567',
+    ]);
+
+    $response = $this->postJson('/api/v1/contacts', [
+        'name' => 'Carlos Pérez',
+        'phone_number' => '3001234567',
+        'email' => 'carlos@gmail.com',
+    ]);
+
+    $response->assertUnprocessable()
+        ->assertJsonValidationErrors(['phone_number']);
+
+    $this->assertDatabaseCount('contacts', 1);
+});

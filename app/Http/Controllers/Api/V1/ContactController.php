@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api\V1;
 use App\Http\Controllers\Controller;
 use App\Models\Contact;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 
 class ContactController extends Controller
 {
@@ -21,9 +22,21 @@ class ContactController extends Controller
     {
         $validated = $request->validate([
             'name' => 'required|string|max:255',
-            'phone_number' => 'required|string|max:255',
+            'phone_number' => [
+                'required',
+                'string',
+                'max:255',
+                Rule::unique('contacts', 'phone_number')
+                    ->where('user_id', $request->user()->id),
+            ],
             'address' => 'nullable|string|max:255',
-            'email' => 'nullable|email|max:255',
+            'email' => [
+                'nullable',
+                'email',
+                'max:255',
+                Rule::unique('contacts', 'email')
+                    ->where('user_id', $request->user()->id),
+            ],
             'avatar' => 'nullable|string|max:255',
         ]);
 
@@ -55,9 +68,24 @@ class ContactController extends Controller
 
         $validated = $request->validate([
             'name' => 'sometimes|required|string|max:255',
-            'phone_number' => 'sometimes|required|string|max:255',
+            'phone_number' => [
+                'sometimes',
+                'required',
+                'string',
+                'max:255',
+                Rule::unique('contacts', 'phone_number')
+                    ->where('user_id', $request->user()->id)
+                    ->ignore($contact->id),
+            ],
             'address' => 'nullable|string|max:255',
-            'email' => 'nullable|email|max:255',
+            'email' => [
+                'nullable',
+                'email',
+                'max:255',
+                Rule::unique('contacts', 'email')
+                    ->where('user_id', $request->user()->id)
+                    ->ignore($contact->id),
+            ],
             'avatar' => 'nullable|string|max:255',
         ]);
 
