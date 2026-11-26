@@ -1,4 +1,4 @@
-<?php
+git status<?php
 
 use App\Http\Controllers\Api\V1\ContactController;
 use App\Http\Controllers\Api\V1\AuthController;

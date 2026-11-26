@@ -62,5 +62,5 @@ test('un usuario autenticado puede cerrar sesión', function () {
 test('no permite consultar el perfil sin autenticación', function () {
     $response = $this->getJson('/api/v1/auth/me');
 
-    $response->assertUnauthorized();
+    $response->assertUnauthorized(); 
 });
