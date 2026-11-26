@@ -11,7 +11,7 @@ test('un usuario puede iniciar sesión', function () {
     $response = $this->postJson('/api/v1/auth/login', [
         'email' => $user->email,
         'password' => 'Password123',
-        'device_name' => 'Dispositivo de prueba',
+        
     ]);
 
     $response->assertOk()
@@ -28,7 +28,7 @@ test('no permite iniciar sesión con credenciales incorrectas', function () {
     $response = $this->postJson('/api/v1/auth/login', [
         'email' => $user->email,
         'password' => 'incorrecta',
-        'device_name' => 'Dispositivo de prueba',
+        
     ]);
 
     $response->assertUnprocessable()
